@@ -7,7 +7,19 @@ document.addEventListener('DOMContentLoaded' , () => {
         add_text = document.querySelector('.add_text') ,
         bufer = [];
 
-        function showList() {
+
+    function showList() {
+        bufer.forEach((value) => {
+            document.querySelector('.list').innerHTML+= `<li class="list_item">
+            <input type="checkbox" name=""  class="done">
+            <div class="text">${value}</div>
+            <div class="delete"></div>
+        </li> `;
+        });
+    }
+    if(JSON.parse(localStorage.getItem("bufer"))) {
+        if((JSON.parse(localStorage.getItem("bufer")).length > 0 )) {
+            bufer = JSON.parse(localStorage.getItem("bufer"));
             bufer.forEach((value) => {
                 document.querySelector('.list').innerHTML+= `<li class="list_item">
                 <input type="checkbox" name=""  class="done">
@@ -16,21 +28,26 @@ document.addEventListener('DOMContentLoaded' , () => {
             </li> `;
             });
         }
+    } else {
+        localStorage.setItem("bufer", JSON.stringify(bufer));
+    }
+    
 
-        todo_content.addEventListener('click' , (e) => {
-            let target = e.target;
-            if(target.classList.contains('done')) {
-                if(target.checked) {
-                    target.closest('.list_item').style.cssText = 'text-decoration:line-through;';
-                } else {
-                    target.closest('.list_item').style.cssText = 'text-decoration:none;';
-                }
-            } else if(target.classList.contains('delete')) {
-                let search_value = target.closest('.list_item').querySelector('.text').value;
-                bufer.splice(bufer.indexOf(search_value) , 1);
-                target.closest('.list_item').remove();
+    todo_content.addEventListener('click' , (e) => {
+        let target = e.target;
+        if(target.classList.contains('done')) {
+            if(target.checked) {
+                target.closest('.list_item').style.cssText = 'text-decoration:line-through;';
+            } else {
+                target.closest('.list_item').style.cssText = 'text-decoration:none;';
             }
-        });
+        } else if(target.classList.contains('delete')) {
+            let search_value = target.closest('.list_item').querySelector('.text').value;
+            bufer.splice(bufer.indexOf(search_value) , 1);
+            localStorage.setItem('bufer' , bufer);
+            target.closest('.list_item').remove();
+        }
+    });
 
     mode.addEventListener('click' , () => {
         document.body.classList.toggle('mode');
@@ -48,6 +65,7 @@ document.addEventListener('DOMContentLoaded' , () => {
             let text = add_text.value;
             add_text.value = " ";
             bufer.push(text);
+            localStorage.setItem("bufer", JSON.stringify(bufer));
             showList();
         } else {
             add_text.classList.add('error_input');
