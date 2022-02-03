@@ -7,44 +7,65 @@ document.addEventListener('DOMContentLoaded' , () => {
         add_text = document.querySelector('.add_text') ,
         bufer = [];
 
-
     function showList() {
         bufer.forEach((value) => {
-            document.querySelector('.list').innerHTML+= `<li class="list_item">
-            <input type="checkbox" name=""  class="done">
-            <div class="text">${value}</div>
-            <div class="delete"></div>
-        </li> `;
-        });
-    }
-    if(JSON.parse(localStorage.getItem("bufer"))) {
-        if((JSON.parse(localStorage.getItem("bufer")).length > 0 )) {
-            bufer = JSON.parse(localStorage.getItem("bufer"));
-            bufer.forEach((value) => {
+            if(value.done == true) {
+                document.querySelector('.list').innerHTML+= `<li class="list_item" style="text-decoration:line-through;">
+                <input type="checkbox" name=""  class="done" checked>
+                <div class="text">${value.text}</div>
+                <div class="delete"></div>
+                </li> `;
+            } else {
                 document.querySelector('.list').innerHTML+= `<li class="list_item">
                 <input type="checkbox" name=""  class="done">
-                <div class="text">${value}</div>
+                <div class="text">${value.text}</div>
                 <div class="delete"></div>
-            </li> `;
-            });
-        }
-    } else {
-        localStorage.setItem("bufer", JSON.stringify(bufer));
+                </li> `;
+            }
+        });
     }
     
+    try {
+        if(JSON.parse(localStorage.getItem("bufer"))) {
+            if((JSON.parse(localStorage.getItem("bufer")).length > 0 )) {
+                bufer = JSON.parse(localStorage.getItem("bufer"));
+                showList();
+            }
+        } else {
+            localStorage.setItem("bufer", JSON.stringify(bufer));
+        }
+    } catch (error) {
+        console.log(error);
+    }
 
     todo_content.addEventListener('click' , (e) => {
         let target = e.target;
+
         if(target.classList.contains('done')) {
+            let checked , search_value = target.closest('.list_item').querySelector('.text').textContent;
+            console.log(search_value);
             if(target.checked) {
                 target.closest('.list_item').style.cssText = 'text-decoration:line-through;';
+                checked = true;
             } else {
                 target.closest('.list_item').style.cssText = 'text-decoration:none;';
+                checked = false;
             }
+            bufer.forEach((item) => {
+                if(item.text == search_value) {
+                    item.done = checked;
+                    localStorage.setItem('bufer' , JSON.stringify(bufer));
+                }
+            });
+
         } else if(target.classList.contains('delete')) {
-            let search_value = target.closest('.list_item').querySelector('.text').value;
-            bufer.splice(bufer.indexOf(search_value) , 1);
-            localStorage.setItem('bufer' , bufer);
+            let search_value = target.closest('.list_item').querySelector('.text').textContent;
+            bufer.forEach((item , index) => {
+                if(item.text == search_value) {
+                    bufer.splice(index , 1);
+                }
+            });
+            localStorage.setItem('bufer' , JSON.stringify(bufer));
             target.closest('.list_item').remove();
         }
     });
@@ -62,9 +83,12 @@ document.addEventListener('DOMContentLoaded' , () => {
         if(add_text.value) {
             add_text.classList.remove('error_input');
             document.querySelector('.list').innerHTML = "";
-            let text = add_text.value;
+            let list = {
+                text:add_text.value ,
+                done:false
+            };
             add_text.value = " ";
-            bufer.push(text);
+            bufer.push(list);
             localStorage.setItem("bufer", JSON.stringify(bufer));
             showList();
         } else {
