@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded' , () => {
 
         if(target.classList.contains('done')) {
             let checked , search_value = target.closest('.list_item').querySelector('.text').textContent;
-            console.log(search_value);
             if(target.checked) {
                 target.closest('.list_item').style.cssText = 'text-decoration:line-through;';
                 checked = true;
