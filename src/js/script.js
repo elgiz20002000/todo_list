@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded' , () => {
         add = document.querySelector('.add') ,
         todo_content = document.querySelector('.todo_content') ,
         add_text = document.querySelector('.add_text') ,
+        mode_change,
         bufer = [];
 
     function showList() {
@@ -23,6 +24,20 @@ document.addEventListener('DOMContentLoaded' , () => {
                 </li> `;
             }
         });
+    }
+
+    if(localStorage.getItem('mode' , mode_change)) {
+        mode_change = localStorage.getItem('mode' , mode_change);
+        if(mode_change == 'true') {
+            document.body.classList.toggle('mode');
+            if(document.querySelector('.mode_button').textContent == 'D') {
+                document.querySelector('.mode_button').textContent = "L";
+            } else {
+                document.querySelector('.mode_button').textContent = 'D';
+            }
+        }
+    } else {
+        localStorage.setItem("mode" , mode_change);
     }
     
     try {
@@ -71,6 +86,8 @@ document.addEventListener('DOMContentLoaded' , () => {
 
     mode.addEventListener('click' , () => {
         document.body.classList.toggle('mode');
+        mode_change = document.body.className == 'mode';
+        localStorage.setItem("mode" , mode_change);
         if(document.querySelector('.mode_button').textContent == 'D') {
             document.querySelector('.mode_button').textContent = "L";
         } else {
@@ -86,7 +103,7 @@ document.addEventListener('DOMContentLoaded' , () => {
                 text:add_text.value ,
                 done:false
             };
-            add_text.value = " ";
+            add_text.value = "";
             bufer.push(list);
             localStorage.setItem("bufer", JSON.stringify(bufer));
             showList();
